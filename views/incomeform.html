@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Adding Field</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <h3>Income Form</h3>
+      <form action="/addincome" method="post">
+        <div>
+          <label for="name">Income Name: </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Income Name.."
+          /><br /><br />
+        </div>
+
+        <div>
+          <label for="source">Income Source: </label>
+          <select class="form-control" id="source" name="source">
+            <option>Salary</option>
+            <option>Sale</option>
+            <option>Asset</option> </select
+          ><br /><br />
+        </div>
+
+        <div>
+          <label for="amount">Amount: </label>
+          <input
+            type="text"
+            id="amount"
+            name="amount"
+            placeholder="Amount.."
+          /><br /><br />
+        </div>
+
+        <input type="submit" value="Submit" />
+      </form>
+    </div>
+  </body>
+</html>

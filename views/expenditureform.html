@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Adding Field</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <h3>Add Field</h3>
+      <form action="/addexpenditure" method="post">
+        <div>
+          <label for="name">Expenditure Name: </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Expenditure Name.."
+          /><br /><br />
+        </div>
+
+        <div>
+          <label for="type">Expenditure Type: </label>
+          <select class="form-control" id="type" name="type">
+            <option>Entertainment</option>
+            <option>Health</option>
+            <option>Travel</option>
+            <option>Petrol</option>
+            <option>Credit Card Bill</option>
+            <option>Electricity Bill</option>
+            <option>House Rent</option>
+            <option>Others</option> </select
+          ><br /><br />
+        </div>
+
+        <div>
+          <label for="modeofpayment">Mode Of Payment: </label>
+          <select class="form-control" id="modeofpayment" name="modeofpayment">
+            <option>Cash</option>
+            <option>Credit Card</option>
+            <option>Debit Card</option>
+            <option>Online Payment</option> </select
+          ><br /><br />
+        </div>
+
+        <div>
+          <label for="bankname">Bank Name: </label>
+          <input
+            type="text"
+            id="bankname"
+            name="bankname"
+            placeholder="Bank Name.."
+          /><br /><br />
+        </div>
+
+        <div>
+          <label for="amount">Amount: </label>
+          <input
+            type="text"
+            id="amount"
+            name="amount"
+            placeholder="Amount.."
+          /><br /><br />
+        </div>
+
+        <input type="submit" value="Submit" />
+      </form>
+    </div>
+  </body>
+</html>

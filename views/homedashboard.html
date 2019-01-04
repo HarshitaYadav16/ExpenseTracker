@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Adding Field</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div>
+        <p>Monthly Income : <span id="monthlyincome"></span></p>
+      </div>
+      <br />
+      <div>
+        <p>Credit Card Expenditure : <span id="creditcard"></span></p>
+      </div>
+      <br />
+      <div>
+        <p>Debit Card Expenditure : <span id="debitcard"></span></p>
+      </div>
+      <br />
+      <div>
+        <p>Online Payment : <span id="onlinepayment"></span></p>
+      </div>
+      <br />
+      <div>
+        <p>Cash Payment : <span id="cash"></span></p>
+      </div>
+      <br />
+      <div>
+        <p>Available Balance : <span id="avaliablebalance"></span></p>
+      </div>
+      <br />
+    </div>
+  </body>
+  <script>
+    $(document).ready(function() {
+      pagehtml = "";
+      axios
+        .get("http://localhost:3000/monthlyincome")
+        .then(function(response) {
+          //var result = response.data.message;
+          var result = response.data;
+          console.log(result[0].sum);
+          var income = result[0].sum;
+          //$("#monthlyincome").html(result[0].sum);
+          pagehtml +=
+            "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+          axios
+            .get("http://localhost:3000/totalexpenditure")
+            .then(function(response) {
+              //var result = response.data.message;
+              var result = response.data;
+              console.log(result);
+              var expenditure = result[0].sum;
+              var availablebalance = income - expenditure;
+              console.log(income);
+              console.log(expenditure);
+              console.log(availablebalance);
+              //$("#availablebalance").html(availablebalance);
+              pagehtml +=
+                "<p>Monthly Income : <span>" +
+                availablebalance +
+                "</span></p><br />";
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      axios
+        .get("http://localhost:3000/creditcard")
+        .then(function(response) {
+          //var result = response.data.message;
+          var result = response.data;
+          console.log(result);
+          //$("#creditcard").html(result[0].sum);
+          pagehtml +=
+            "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
+      axios
+        .get("http://localhost:3000/debitcard")
+        .then(function(response) {
+          //var result = response.data.message;
+          var result = response.data;
+          console.log(result);
+          //$("#debitcard").html(result[0].sum);
+          pagehtml +=
+            "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
+      axios
+        .get("http://localhost:3000/onlinepayment")
+        .then(function(response) {
+          //var result = response.data.message;
+          var result = response.data;
+          console.log(result);
+          //$("#onlinepayment").html(result[0].sum);
+          pagehtml +=
+            "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
+      axios
+        .get("http://localhost:3000/cash")
+        .then(function(response) {
+          //var result = response.data.message;
+          var result = response.data;
+          console.log(result);
+          //$("#cash").html(result[0].sum);
+          pagehtml +=
+            "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
+      $(".main").html(pagehtml);
+    });
+  </script>
+</html>

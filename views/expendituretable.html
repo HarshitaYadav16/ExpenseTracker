@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Adding Field</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"
+    />
+  </head>
+  <body>
+    <div class="main" style="width: 80%;margin-left: 2%;margin-top: 2%;">
+      <table id="example" class="display" width="100%"></table>
+    </div>
+  </body>
+  <script>
+    $(document).ready(function() {
+      //$("#example").DataTable();
+      // $(function() {
+      //   $("#example").DataTable({});
+      // });
+
+      var token = "";
+      axios
+        .get("http://localhost:3000/gettoken")
+        .then(function(response) {
+          token = response.data.token;
+
+          axios
+            .get("http://localhost:3000/getexpenditure", {
+              headers: { Authorization: "Bearer " + token }
+            })
+            .then(function(response) {
+              //var result = response.data.message;
+              var result = response.data;
+              console.log(result);
+              var array = result;
+              var output = [];
+              for (var i = 0; i < array.length; i++) {
+                arr = Object.values(array[i]);
+                console.log(arr);
+                var id = arr[0];
+                console.log(id);
+                arr = arr.splice(1, 5);
+                arr.push("<a href='/updatexp/" + id + "'>Update</a>");
+                arr.push("<a href='/deleteExpenditure/" + id + "'>Delete</a>");
+                output.push(arr);
+              }
+              console.log(output);
+              tablehtml = "";
+              $("#example").DataTable({
+                data: output,
+                columns: [
+                  { title: "Name" },
+                  { title: "Type" },
+                  { title: "Mode Of Payment" },
+                  { title: "BankName" },
+                  { title: "Amount" },
+                  { title: "Update" },
+                  { title: "Delete" }
+                ]
+              });
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    });
+  </script>
+</html>
