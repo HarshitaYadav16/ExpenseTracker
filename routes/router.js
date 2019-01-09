@@ -10,6 +10,7 @@ const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const ensureToken = require("../middleware/ensuretoken");
 const promise = require("promise");
+var nodemailer = require("nodemailer");
 
 //POST route for new user registration and login
 /**
@@ -77,6 +78,7 @@ router.post("/register", (req, res, next) => {
 
           req.session.token = token;
           req.session.userId = user._id;
+          req.session.username = user.username;
           return res.sendFile(
             path.join(__dirname + "/../views/homedashboard.html")
           );
@@ -107,33 +109,9 @@ router.post("/register", (req, res, next) => {
  * @apiSuccess  Redirection to home page
  * @apiError Error
  */
-router.post("/addfield", (req, res, next) => {
-  const fieldData = {
-    fieldname: req.body.fieldname,
-    fieldtype: req.body.fieldtype,
-    required: req.body.required,
-    defaultvalue: req.body.defaultvalue
-  };
-
-  Input.create(fieldData, (error, input) => {
-    if (error) {
-      return next(error);
-    } else {
-      return res.redirect("/homepage");
-    }
-  });
-});
-
-//POST route to add new field in the form
-/**
- * @api {post} /addfield Adding new field in the form
- * @apiName addfield
- * @apiGroup Field
- * @apiSuccess  Redirection to home page
- * @apiError Error
- */
 router.post("/addincome", (req, res, next) => {
   const incomeData = {
+    username: req.session.username,
     name: req.body.name,
     source: req.body.source,
     amount: req.body.amount
@@ -165,6 +143,7 @@ router.post("/addexpenditure", (req, res, next) => {
       },
       {
         $set: {
+          username: req.session.username,
           name: req.body.name,
           type: req.body.type,
           modeofpayment: req.body.modeofpayment,
@@ -187,6 +166,7 @@ router.post("/addexpenditure", (req, res, next) => {
     );
   } else {
     const expenditureData = {
+      username: req.session.username,
       name: req.body.name,
       type: req.body.type,
       modeofpayment: req.body.modeofpayment,
@@ -204,50 +184,33 @@ router.post("/addexpenditure", (req, res, next) => {
   }
 });
 
-//POST route to add new field in the form
-/**
- * @api {post} /addnewfield Posts form data in db
- * @apiName addnewfield
- * @apiGroup Field
- * @apiSuccess  Redirection to a table which shows form data
- * @apiError Sends the error
- */
-router.post("/addnewfield", (req, res, next) => {
-  let result = req.body;
-  for (var i in result) {
-    if (isNaN(result[i])) {
-    } else {
-      result[i] = parseInt(result[i]);
-    }
-  }
-  Field.create(result, (error, input) => {
-    if (error) {
-      return next(error);
-    } else {
-      return res.redirect("/tablepage");
+//forgot password mail
+
+router.post("/forgotpassword", (req, res) => {
+  let email = req.body.email;
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "harshita.yadav@terralogic.com",
+      pass: "Harshi@16"
     }
   });
-});
 
-router.post("/updaterow/:id", (req, res, next) => {
-  Field.findOneAndUpdate(
-    {
-      _id: req.params.id
-    },
-    {
-      $set: req.body
-    },
-    {
-      upsert: true
-    },
-    (err, data) => {
-      if (err) res.send(err);
-      else {
-        console.log(data);
-        res.redirect("/tablepage");
-      }
+  var mailOptions = {
+    from: "harshita.yadav@terralogic.com",
+    to: email, //"harshita16feb@gmail.com",
+    subject: "Forgot Password mail",
+    text: "Please re-enter password!"
+  };
+
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+      res.send("Mail Sent");
     }
-  );
+  });
 });
 
 //pagination
@@ -300,28 +263,19 @@ router.get("/gettoken", (req, res, next) => {
  * @apiError Sends the error
  */
 router.get("/getexpenditure", ensureToken, (req, res, next) => {
-  Expenditure.find((err, data) => {
-    if (err) res.send(err);
-    else return res.send(data);
-  });
-});
-
-//GET route to get all fields in for the form
-/**
- * @api {GET} /newfield Get all fields in the form
- * @apiName newfield
- * @apiGroup Input
- * @apiSuccess {String} name of the field
- * @apiSuccess {String} type of the field
- * @apiSuccess {String} required or optional
- * @apiSuccess {String} default value
- * @apiError Sends the error
- */
-router.get("/newfield", ensureToken, (req, res, next) => {
-  Input.find((err, data) => {
-    if (err) res.send(err);
-    else return res.send(data);
-  });
+  // Expenditure.find((err, data) => {
+  //   if (err) res.send(err);
+  //   else return res.send(data);
+  // });
+  Expenditure.find(
+    {
+      username: req.session.username
+    },
+    (err, data) => {
+      if (err) res.send(err);
+      else return res.send(data);
+    }
+  );
 });
 
 //GET route to delete user according to ID
@@ -342,42 +296,10 @@ router.get("/user", ensureToken, (req, res, next) => {
   });
 });
 
-//GET route to delete user according to ID
-/**
- * @api {get} /formfield Gets type of fields to create form
- * @apiName formfield
- * @apiGroup Field
- * @apiSuccess {String} get dynamic form data
- * @apiError Sends the error
- */
-router.get("/formfield", ensureToken, (req, res, next) => {
-  Field.find((err, data) => {
-    if (err) res.send(err);
-    else return res.send(data);
-  });
-});
-
-router.get("/report", ensureToken, (req, res, next) => {
-  Field.aggregate(
-    [
-      {
-        $group: {
-          _id: "$Location",
-          people: { $push: "$Name" },
-          count: { $sum: 1 }
-        }
-      }
-    ],
-    (err, data) => {
-      if (err) res.send(err);
-      else return res.send(data);
-    }
-  );
-});
-
 router.get("/monthlyincome", (req, res, next) => {
   Income.aggregate(
     [
+      { $match: { username: req.session.username } },
       {
         $group: {
           _id: null,
@@ -395,6 +317,7 @@ router.get("/monthlyincome", (req, res, next) => {
 router.get("/totalexpenditure", (req, res, next) => {
   Expenditure.aggregate(
     [
+      { $match: { username: req.session.username } },
       {
         $group: {
           _id: null,
@@ -413,7 +336,7 @@ router.get("/creditcard", (req, res, next) => {
   Expenditure.aggregate(
     [
       {
-        $match: { modeofpayment: "Credit Card" }
+        $match: { modeofpayment: "Credit Card", username: req.session.username }
       },
       {
         $group: {
@@ -433,7 +356,7 @@ router.get("/debitcard", (req, res, next) => {
   Expenditure.aggregate(
     [
       {
-        $match: { modeofpayment: "Debit Card" }
+        $match: { modeofpayment: "Debit Card", username: req.session.username }
       },
       {
         $group: {
@@ -453,7 +376,10 @@ router.get("/onlinepayment", (req, res, next) => {
   Expenditure.aggregate(
     [
       {
-        $match: { modeofpayment: "Online Payment" }
+        $match: {
+          modeofpayment: "Online Payment",
+          username: req.session.username
+        }
       },
       {
         $group: {
@@ -473,7 +399,7 @@ router.get("/cash", (req, res, next) => {
   Expenditure.aggregate(
     [
       {
-        $match: { modeofpayment: "Cash" }
+        $match: { modeofpayment: "Cash", username: req.session.username }
       },
       {
         $group: {
@@ -509,20 +435,6 @@ router.get("/cash", (req, res, next) => {
 //   );
 // });
 
-router.get("/check", ensureToken, (req, res, next) => {
-  Field.aggregate(
-    [
-      { $project: { o: { $objectToArray: "$$ROOT" } } },
-      { $unwind: "$o" },
-      { $group: { _id: null, keys: { $addToSet: "$o.k" } } }
-    ],
-    (err, data) => {
-      if (err) res.send(err);
-      else return res.send(data);
-    }
-  );
-});
-
 //GET route to redirect to home page
 /**
  * @api {get} /homepage redirects to homepage of application
@@ -554,6 +466,7 @@ router.post("/updatexpenditure", (req, res) => {
     },
     {
       $set: {
+        username: req.session.username,
         name: req.body.name,
         type: req.body.type,
         modeofpayment: req.body.modeofpayment,
@@ -585,107 +498,24 @@ router.get("/updatepage", (req, res, next) => {
   );
 });
 
-//GET route to redirect to home page
-/**
- * @api {get} /homepage redirects to homepage of application
- * @apiName homepage
- */
-router.get("/homepage", (req, res, next) => {
-  return res.sendFile(path.join(__dirname + "/../views/homepage.html"));
-});
-
-//GET route to redirect to add field page
-/**
- * @api {get} /addfieldpage redirects to page where you can add a new field in the dynamic form
- * @apiName addfieldpage
- */
-router.get("/addfieldpage", (req, res, next) => {
-  return res.sendFile(path.join(__dirname + "/../views/addfield.html"));
-});
-
-//GET route to redirect to form table page
-/**
- * @api {get} /tablepage redirects to page displaying dynamic form data in table format
- * @apiName tablepage
- */
-router.get("/tablepage", (req, res, next) => {
-  return res.sendFile(path.join(__dirname + "/../views/table.html"));
-});
-
-//GET route to redirect to user form page
-/**
- * @api {get} /userform redirects to page where form is displayed for user to fillup
- * @apiName userform
- */
-router.get("/userform", (req, res, next) => {
-  return res.sendFile(path.join(__dirname + "/../views/userform.html"));
+router.get("/forgotpasswordpage", (req, res, next) => {
+  return res.sendFile(path.join(__dirname + "/../views/forgotpassword.html"));
 });
 
 router.get("/expendituretable", (req, res, next) => {
   return res.sendFile(path.join(__dirname + "/../views/expendituretable.html"));
 });
 
+router.get("/expenditureform", (req, res, next) => {
+  return res.sendFile(path.join(__dirname + "/../views/expenditureform.html"));
+});
+
+router.get("/incomeform", (req, res, next) => {
+  return res.sendFile(path.join(__dirname + "/../views/incomeform.html"));
+});
+
 router.get("/fieldadded", (req, res, next) => {
   res.send("form submitted" + "<br><a href='/logout'>Logout</a>");
-});
-
-//GET route to delete all documents of the dynamic form
-/**
- * @api {get} /fieldadded Deletes movie information
- * @apiName fieldadded
- * @apiGroup Field
- * @apiSuccess {String} delete all documents in form
- * @apiError Sends the error
- */
-router.get("/deleteallfields", (req, res, next) => {
-  Field.deleteMany({}, (err, data) => {
-    if (err) res.send(err);
-    else {
-      res.send("");
-    }
-  });
-});
-
-//GET route to delete all fields of the form
-/**
- * @api {get} /clearinputfields Deletes all fields of the form
- * @apiName clearinputfields
- * @apiGroup Input
- * @apiSuccess {String} deletes all fields of the form
- * @apiError Sends the error
- */
-router.get("/clearinputfields", (req, res, next) => {
-  Input.deleteMany({}, (err, data) => {
-    if (err) res.send(err);
-    else {
-      res.redirect("/homepage");
-    }
-  });
-});
-
-//GET route to delete single field document according to ID
-/**
- * @api {delete} /deleteField/:id Deletes single field document
- * @apiName deleteField
- * @apiGroup Input
- * @apiSuccess {String} delete field name
- * @apiSuccess {String} delete field type
- * @apiSuccess {String} delete required or optional
- * @apiSuccess {String} delete default value of field
- * @apiError Sends the error
- */
-router.get("/deleteField/:id", (req, res) => {
-  Input.findOneAndRemove(
-    {
-      _id: req.params.id
-    },
-    (err, data) => {
-      if (err) res.send(err);
-      else {
-        return res.redirect("/homepage");
-      }
-    }
-  );
 });
 
 //GET route to delete single field document according to ID
@@ -713,29 +543,30 @@ router.get("/deleteExpenditure/:id", (req, res) => {
   );
 });
 
-//GET route to delete single field document according to ID
-/**
- * @api {delete} /deleteField/:id Deletes single field document
- * @apiName deleteField
- * @apiGroup Input
- * @apiSuccess {String} delete field name
- * @apiSuccess {String} delete field type
- * @apiSuccess {String} delete required or optional
- * @apiSuccess {String} delete default value of field
- * @apiError Sends the error
- */
-router.get("/deleterow/:id", (req, res) => {
-  Field.findOneAndRemove(
-    {
-      _id: req.params.id
-    },
-    (err, data) => {
-      if (err) res.send(err);
-      else {
-        return res.redirect("/tablepage");
-      }
+// GET for approval mails to be sent
+router.get("/approve", function(req, res, next) {
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "harshita.yadav@terralogic.com",
+      pass: "Harshi@16"
     }
-  );
+  });
+
+  var mailOptions = {
+    from: "harshita.yadav@terralogic.com",
+    to: "harshita16feb@gmail.com",
+    subject: "Approval mail",
+    text: "Please approve!"
+  };
+
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
 });
 
 //GET route for user to logout

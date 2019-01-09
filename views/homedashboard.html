@@ -31,9 +31,11 @@
       </div>
       <br />
       <div>
-        <p>Available Balance : <span id="avaliablebalance"></span></p>
+        <p>Available Balance : <span id="availablebalance"></span></p>
       </div>
       <br />
+      <p><a href="/incomeform">Income form</a></p>
+      <p><a href="/expenditureform">Expenditure form</a></p>
     </div>
   </body>
   <script>
@@ -46,9 +48,9 @@
           var result = response.data;
           console.log(result[0].sum);
           var income = result[0].sum;
-          //$("#monthlyincome").html(result[0].sum);
-          pagehtml +=
-            "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+          $("#monthlyincome").html(result[0].sum);
+          // pagehtml +=
+          //   "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
           axios
             .get("http://localhost:3000/totalexpenditure")
             .then(function(response) {
@@ -60,11 +62,11 @@
               console.log(income);
               console.log(expenditure);
               console.log(availablebalance);
-              //$("#availablebalance").html(availablebalance);
-              pagehtml +=
-                "<p>Monthly Income : <span>" +
-                availablebalance +
-                "</span></p><br />";
+              $("#availablebalance").html(availablebalance);
+              // pagehtml +=
+              //   "<p>Monthly Income : <span>" +
+              //   availablebalance +
+              //   "</span></p><br />";
             })
             .catch(function(error) {
               console.log(error);
@@ -79,9 +81,9 @@
           //var result = response.data.message;
           var result = response.data;
           console.log(result);
-          //$("#creditcard").html(result[0].sum);
-          pagehtml +=
-            "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+          $("#creditcard").html(result[0].sum);
+          // pagehtml +=
+          //   "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
         })
         .catch(function(error) {
           console.log(error);
@@ -93,7 +95,7 @@
           //var result = response.data.message;
           var result = response.data;
           console.log(result);
-          //$("#debitcard").html(result[0].sum);
+          $("#debitcard").html(result[0].sum);
           pagehtml +=
             "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
         })
@@ -107,9 +109,9 @@
           //var result = response.data.message;
           var result = response.data;
           console.log(result);
-          //$("#onlinepayment").html(result[0].sum);
-          pagehtml +=
-            "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+          $("#onlinepayment").html(result[0].sum);
+          // pagehtml +=
+          //   "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
         })
         .catch(function(error) {
           console.log(error);
@@ -121,15 +123,15 @@
           //var result = response.data.message;
           var result = response.data;
           console.log(result);
-          //$("#cash").html(result[0].sum);
-          pagehtml +=
-            "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+          $("#cash").html(result[0].sum);
+          // pagehtml +=
+          //   "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
         })
         .catch(function(error) {
           console.log(error);
         });
 
-      $(".main").html(pagehtml);
+      //$(".main").html(pagehtml);
     });
   </script>
 </html>
