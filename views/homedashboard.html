@@ -11,31 +11,33 @@
   <body>
     <div class="main">
       <div>
-        <p>Monthly Income : <span id="monthlyincome"></span></p>
+        <p>Monthly Income : <span id="monthlyincome">0</span></p>
       </div>
       <br />
       <div>
-        <p>Credit Card Expenditure : <span id="creditcard"></span></p>
+        <p>Credit Card Expenditure : <span id="creditcard">0</span></p>
       </div>
       <br />
       <div>
-        <p>Debit Card Expenditure : <span id="debitcard"></span></p>
+        <p>Debit Card Expenditure : <span id="debitcard">0</span></p>
       </div>
       <br />
       <div>
-        <p>Online Payment : <span id="onlinepayment"></span></p>
+        <p>Online Payment : <span id="onlinepayment">0</span></p>
       </div>
       <br />
       <div>
-        <p>Cash Payment : <span id="cash"></span></p>
+        <p>Cash Payment : <span id="cash">0</span></p>
       </div>
       <br />
       <div>
-        <p>Available Balance : <span id="availablebalance"></span></p>
+        <p>Available Balance : <span id="availablebalance">0</span></p>
       </div>
       <br />
       <p><a href="/incomeform">Income form</a></p>
       <p><a href="/expenditureform">Expenditure form</a></p>
+      <p><a href="/expendituretable">Expenditure Table</a></p>
+      <p><a href="/logout">Logout</a></p>
     </div>
   </body>
   <script>
@@ -44,29 +46,33 @@
       axios
         .get("http://localhost:3000/monthlyincome")
         .then(function(response) {
-          //var result = response.data.message;
           var result = response.data;
           console.log(result[0].sum);
-          var income = result[0].sum;
-          $("#monthlyincome").html(result[0].sum);
-          // pagehtml +=
-          //   "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+          var income = 0;
+          if (result[0] == undefined) {
+            income = 0;
+          } else {
+            income = result[0].sum;
+          }
+          $("#monthlyincome").html(income);
+
           axios
             .get("http://localhost:3000/totalexpenditure")
             .then(function(response) {
-              //var result = response.data.message;
               var result = response.data;
-              console.log(result);
-              var expenditure = result[0].sum;
+              var expenditure = 0;
+              console.log("expenditure result:" + result);
+              if (result[0] == undefined) {
+                expenditure = 0;
+              } else {
+                expenditure = result[0].sum;
+              }
+              console.log("current expenditure:" + expenditure);
               var availablebalance = income - expenditure;
               console.log(income);
-              console.log(expenditure);
+              console.log("expenditure:" + expenditure);
               console.log(availablebalance);
               $("#availablebalance").html(availablebalance);
-              // pagehtml +=
-              //   "<p>Monthly Income : <span>" +
-              //   availablebalance +
-              //   "</span></p><br />";
             })
             .catch(function(error) {
               console.log(error);
@@ -75,15 +81,19 @@
         .catch(function(error) {
           console.log(error);
         });
+
       axios
         .get("http://localhost:3000/creditcard")
         .then(function(response) {
-          //var result = response.data.message;
           var result = response.data;
           console.log(result);
-          $("#creditcard").html(result[0].sum);
-          // pagehtml +=
-          //   "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+
+          if (result[0] == undefined) {
+            $("#creditcard").html(0);
+          } else {
+            $("#creditcard").html(result[0].sum);
+          }
+          //$("#creditcard").html(result[0].sum);
         })
         .catch(function(error) {
           console.log(error);
@@ -92,12 +102,14 @@
       axios
         .get("http://localhost:3000/debitcard")
         .then(function(response) {
-          //var result = response.data.message;
           var result = response.data;
           console.log(result);
-          $("#debitcard").html(result[0].sum);
-          pagehtml +=
-            "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+          if (result[0] == undefined) {
+            $("#debitcard").html(0);
+          } else {
+            $("#debitcard").html(result[0].sum);
+          }
+          //$("#debitcard").html(result[0].sum);
         })
         .catch(function(error) {
           console.log(error);
@@ -106,12 +118,14 @@
       axios
         .get("http://localhost:3000/onlinepayment")
         .then(function(response) {
-          //var result = response.data.message;
           var result = response.data;
           console.log(result);
-          $("#onlinepayment").html(result[0].sum);
-          // pagehtml +=
-          //   "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+          if (result[0] == undefined) {
+            $("#onlinepayment").html(0);
+          } else {
+            $("#onlinepayment").html(result[0].sum);
+          }
+          //$("#onlinepayment").html(result[0].sum);
         })
         .catch(function(error) {
           console.log(error);
@@ -120,18 +134,18 @@
       axios
         .get("http://localhost:3000/cash")
         .then(function(response) {
-          //var result = response.data.message;
           var result = response.data;
           console.log(result);
-          $("#cash").html(result[0].sum);
-          // pagehtml +=
-          //   "<p>Monthly Income : <span>" + result[0].sum + "</span></p><br />";
+          if (result[0] == undefined) {
+            $("#cash").html(0);
+          } else {
+            $("#cash").html(result[0].sum);
+          }
+          //$("#cash").html(result[0].sum);
         })
         .catch(function(error) {
           console.log(error);
         });
-
-      //$(".main").html(pagehtml);
     });
   </script>
 </html>

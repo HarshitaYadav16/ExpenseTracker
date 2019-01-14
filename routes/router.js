@@ -121,7 +121,9 @@ router.post("/addincome", (req, res, next) => {
     if (error) {
       return next(error);
     } else {
-      return res.send("Income added");
+      return res.sendFile(
+        path.join(__dirname + "/../views/homedashboard.html")
+      );
     }
   });
 });
@@ -135,53 +137,53 @@ router.post("/addincome", (req, res, next) => {
  * @apiError Error
  */
 router.post("/addexpenditure", (req, res, next) => {
-  console.log("post" + req.session.updateid);
-  if (req.session.updateid !== null) {
-    Expenditure.findOneAndUpdate(
-      {
-        _id: req.session.updateid
-      },
-      {
-        $set: {
-          username: req.session.username,
-          name: req.body.name,
-          type: req.body.type,
-          modeofpayment: req.body.modeofpayment,
-          bankname: req.body.bankname,
-          amount: req.body.amount
-        }
-      },
-      {
-        upsert: true
-      },
-      (err, data) => {
-        if (err) res.send(err);
-        else {
-          req.session.updateid = null;
-          console.log(req.session.updateid);
-          console.log(data);
-          res.send("Details Updated");
-        }
-      }
-    );
-  } else {
-    const expenditureData = {
-      username: req.session.username,
-      name: req.body.name,
-      type: req.body.type,
-      modeofpayment: req.body.modeofpayment,
-      bankname: req.body.bankname,
-      amount: req.body.amount
-    };
+  // console.log("post" + req.session.updateid);
+  // if (req.session.updateid !== null) {
+  //   Expenditure.findOneAndUpdate(
+  //     {
+  //       _id: req.session.updateid
+  //     },
+  //     {
+  //       $set: {
+  //         username: req.session.username,
+  //         name: req.body.name,
+  //         type: req.body.type,
+  //         modeofpayment: req.body.modeofpayment,
+  //         bankname: req.body.bankname,
+  //         amount: req.body.amount
+  //       }
+  //     },
+  //     {
+  //       upsert: true
+  //     },
+  //     (err, data) => {
+  //       if (err) res.send(err);
+  //       else {
+  //         req.session.updateid = null;
+  //         console.log(req.session.updateid);
+  //         console.log(data);
+  //         res.send("Details Updated");
+  //       }
+  //     }
+  //   );
+  // } else {
+  const expenditureData = {
+    username: req.session.username,
+    name: req.body.name,
+    type: req.body.type,
+    modeofpayment: req.body.modeofpayment,
+    bankname: req.body.bankname,
+    amount: req.body.amount
+  };
 
-    Expenditure.create(expenditureData, (error, input) => {
-      if (error) {
-        return next(error);
-      } else {
-        return res.send("expenditure added");
-      }
-    });
-  }
+  Expenditure.create(expenditureData, (error, input) => {
+    if (error) {
+      return next(error);
+    } else {
+      return res.redirect("/expendituretable");
+    }
+  });
+  //}
 });
 
 //forgot password mail
@@ -462,7 +464,7 @@ router.get("/defaultvalue", ensureToken, (req, res) => {
 router.post("/updatexpenditure", (req, res) => {
   Expenditure.findOneAndUpdate(
     {
-      _id: req.session.updateid
+      _id: req.body.id
     },
     {
       $set: {
@@ -481,7 +483,7 @@ router.post("/updatexpenditure", (req, res) => {
       if (err) res.send(err);
       else {
         console.log(data);
-        res.send("Details Updated");
+        return res.send("/expendituretable");
       }
     }
   );
@@ -512,6 +514,10 @@ router.get("/expenditureform", (req, res, next) => {
 
 router.get("/incomeform", (req, res, next) => {
   return res.sendFile(path.join(__dirname + "/../views/incomeform.html"));
+});
+
+router.get("/homedashboard", (req, res, next) => {
+  return res.sendFile(path.join(__dirname + "/../views/homedashboard.html"));
 });
 
 router.get("/fieldadded", (req, res, next) => {

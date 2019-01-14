@@ -9,7 +9,7 @@ const MongoStore = require("connect-mongo")(session);
 
 //connect to MongoDB
 mongoose.connect(
-  "mongodb://user:expensetracker1@ds245523.mlab.com:45523/expensetracker",
+  "mongodb://user:expensetracker1@ds153824.mlab.com:53824/expensetracker",
   {
     useMongoClient: true
   }
@@ -62,13 +62,6 @@ app.use((err, req, res, next) => {
   res.send(err.message);
 });
 
-// const paths = app._router.stack // registered routes
-//   .filter(r => r.route) // take out all the middleware
-//   .map(r => r.route.path);
-
-// console.log(paths);
-
-//process.env["PORT"] = "8000";
 // listen on port 3000
 app.listen(process.env.PORT, () => {
   console.log("Express app listening on port " + process.env.PORT);

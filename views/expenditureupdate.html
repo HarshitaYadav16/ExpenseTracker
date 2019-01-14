@@ -11,63 +11,63 @@
   <body>
     <div class="main">
       <h3>Add Field</h3>
-      <form action="/updatexpenditure" method="post">
-        <div>
-          <label for="name">Expenditure Name: </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            placeholder="Expenditure Name.."
-          /><br /><br />
-        </div>
+      <!-- <form action="/updatexpenditure" method="post"> -->
+      <div>
+        <label for="name">Expenditure Name: </label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Expenditure Name.."
+        /><br /><br />
+      </div>
 
-        <div>
-          <label for="type">Expenditure Type: </label>
-          <select class="form-control" id="type" name="type">
-            <option>Entertainment</option>
-            <option>Health</option>
-            <option>Travel</option>
-            <option>Petrol</option>
-            <option>Credit Card Bill</option>
-            <option>Electricity Bill</option>
-            <option>House Rent</option>
-            <option>Others</option> </select
-          ><br /><br />
-        </div>
+      <div>
+        <label for="type">Expenditure Type: </label>
+        <select class="form-control" id="type" name="type">
+          <option>Entertainment</option>
+          <option>Health</option>
+          <option>Travel</option>
+          <option>Petrol</option>
+          <option>Credit Card Bill</option>
+          <option>Electricity Bill</option>
+          <option>House Rent</option>
+          <option>Others</option> </select
+        ><br /><br />
+      </div>
 
-        <div>
-          <label for="modeofpayment">Mode Of Payment: </label>
-          <select class="form-control" id="modeofpayment" name="modeofpayment">
-            <option>Cash</option>
-            <option>Credit Card</option>
-            <option>Debit Card</option>
-            <option>Online Payment</option> </select
-          ><br /><br />
-        </div>
+      <div>
+        <label for="modeofpayment">Mode Of Payment: </label>
+        <select class="form-control" id="modeofpayment" name="modeofpayment">
+          <option>Cash</option>
+          <option>Credit Card</option>
+          <option>Debit Card</option>
+          <option>Online Payment</option> </select
+        ><br /><br />
+      </div>
 
-        <div>
-          <label for="bankname">Bank Name: </label>
-          <input
-            type="text"
-            id="bankname"
-            name="bankname"
-            placeholder="Bank Name.."
-          /><br /><br />
-        </div>
+      <div>
+        <label for="bankname">Bank Name: </label>
+        <input
+          type="text"
+          id="bankname"
+          name="bankname"
+          placeholder="Bank Name.."
+        /><br /><br />
+      </div>
 
-        <div>
-          <label for="amount">Amount: </label>
-          <input
-            type="text"
-            id="amount"
-            name="amount"
-            placeholder="Amount.."
-          /><br /><br />
-        </div>
+      <div>
+        <label for="amount">Amount: </label>
+        <input
+          type="text"
+          id="amount"
+          name="amount"
+          placeholder="Amount.."
+        /><br /><br />
+      </div>
 
-        <input type="submit" value="Submit" />
-      </form>
+      <input id="searchbutton" type="submit" value="Submit" />
+      <!-- </form> -->
     </div>
   </body>
   <script>
@@ -91,6 +91,44 @@
               $("#modeofpayment").val(result.modeofpayment);
               $("#bankname").attr("value", result.bankname);
               $("#amount").attr("value", result.amount);
+
+              //post query for expenditure update
+              $("#searchbutton").click(() => {
+                let name = document.getElementById("name").value;
+                let type = document.getElementById("type").value;
+                let modeofpayment = document.getElementById("modeofpayment")
+                  .value;
+                let bankname = document.getElementById("bankname").value;
+                let amount = document.getElementById("amount").value;
+                $.post(
+                  "http://localhost:3000/updatexpenditure",
+                  {
+                    id: result._id,
+                    name: name,
+                    type: type,
+                    modeofpayment: modeofpayment,
+                    bankname: bankname,
+                    amount: amount
+                  },
+                  (data, status) => {
+                    console.log(
+                      window.location.protocol +
+                        "//" +
+                        window.location.host +
+                        data
+                    );
+                    if (typeof data == "string") {
+                      window.location.replace(
+                        window.location.protocol +
+                          "//" +
+                          window.location.host +
+                          data
+                      );
+                    }
+                  }
+                );
+              });
+              //-----------------
             })
             .catch(function(error) {
               console.log(error);

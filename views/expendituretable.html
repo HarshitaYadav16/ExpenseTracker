@@ -17,6 +17,9 @@
     <div class="main" style="width: 80%;margin-left: 2%;margin-top: 2%;">
       <table id="example" class="display" width="100%"></table>
     </div>
+    <p><a href="/homedashboard">View Homepage</a></p>
+    <p><a href="/expenditureform">Add Expenditure</a></p>
+    <p><a href="/logout">Logout</a></p>
   </body>
   <script>
     $(document).ready(function() {
@@ -46,7 +49,7 @@
                 console.log(arr);
                 var id = arr[0];
                 console.log(id);
-                arr = arr.splice(1, 5);
+                arr = arr.splice(2, 5);
                 arr.push("<a href='/updatexp/" + id + "'>Update</a>");
                 arr.push("<a href='/deleteExpenditure/" + id + "'>Delete</a>");
                 output.push(arr);
